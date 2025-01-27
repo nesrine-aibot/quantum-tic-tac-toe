@@ -6,7 +6,7 @@ from math import pi, sqrt
 
 class QuantumTicTacToe:
     def __init__(self):
-        self.board = [' ' for _ in range(9)]  # Initialize an empty board
+        self.board = [' ' for _ in range(9)]  
 
     def print_board(self):
         """Print the current board state."""
@@ -70,32 +70,24 @@ class QuantumTicTacToe:
         """
         Use Grover's algorithm to find the best move for the current board state.
         """
-        num_qubits = 4  # We need only enough qubits to represent 0-8 (3 qubits minimum, 4 for flexibility)
-        qr = QuantumRegister(num_qubits, name='q')  # Quantum register
-        cr = ClassicalRegister(num_qubits, name='c')  # Classical register
+        num_qubits = 4  
+        qr = QuantumRegister(num_qubits, name='q')  
+        cr = ClassicalRegister(num_qubits, name='c') 
         qc = QuantumCircuit(qr, cr)
 
-        # Step 1: Initialize qubits in a uniform superposition
+       
         qc.h(qr)
 
-        # Step 2: Apply the Grover oracle
+       
         valid_moves = [i for i in range(9) if self.is_valid_move(i)]
         if not valid_moves:
             raise ValueError("No valid moves available!")
         self.oracle(qc, qr, valid_moves)
-
-        # Step 3: Apply the diffusion operator
         self.diffusion_operator(qc, qr)
-
-        # Step 4: Measure the qubits
         qc.measure(qr, cr)
-
-        # Step 5: Simulate the quantum circuit
         simulator = AerSimulator()
         result = simulator.run(qc, shots=1024).result()
         counts = result.get_counts()
-
-        # Find the most probable state and convert it to a move
         valid_counts = {int(state, 2): count for state, count in counts.items() if int(state, 2) in valid_moves}
         if not valid_counts:
             raise ValueError("No valid moves found in the result!")
@@ -113,7 +105,6 @@ class QuantumTicTacToe:
             print(f"Player {current_player}'s turn.")
 
             if current_player == 'X':
-                # Use Grover's algorithm to find the best move
                 try:
                     best_move = self.find_best_move()
                 except ValueError as e:
@@ -121,7 +112,6 @@ class QuantumTicTacToe:
                     print("Game over!")
                     break
             else:
-                # For simplicity, Player O plays randomly
                 valid_moves = [i for i in range(9) if self.is_valid_move(i)]
                 best_move = np.random.choice(valid_moves)
 
@@ -131,7 +121,6 @@ class QuantumTicTacToe:
                 print(f"Invalid move by {current_player}.")
                 continue
 
-            # Check for game result
             result = self.evaluate_board()
             if result == 1:
                 self.print_board()
@@ -146,11 +135,9 @@ class QuantumTicTacToe:
                 print("It's a draw!")
                 break
 
-            # Switch player
             current_player = 'O' if current_player == 'X' else 'X'
 
 
-# Run the game
 if __name__ == '__main__':
     game = QuantumTicTacToe()
     game.play_game()
